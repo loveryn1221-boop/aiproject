@@ -395,4 +395,21 @@ st.divider()
 
 st.info(
     "💡 본 결과는 제공된 CSV 데이터에 기반한 "
-    "국가별 MBTI 유형 비율
+    "국가별 MBTI 유형 비율입니다. "
+    "실제 국민 전체의 성격을 확정하는 통계는 아닙니다."
+)
+
+st.markdown(
+    """
+    <div style="
+        text-align:center;
+        color:#FF69B4;
+        padding:20px;
+        font-size:16px;
+    ">
+        💗 Made with Streamlit | MBTI WORLD 🌎
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+```
