@@ -4,210 +4,238 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 
-# ----------------------------------
+# =====================================
 # 1. 페이지 설정
-# ----------------------------------
+# =====================================
+
 st.set_page_config(
-    page_title="세계 MBTI 탐험 🌎",
+    page_title="MBTI WORLD",
     page_icon="💗",
     layout="wide"
 )
 
-# ----------------------------------
-# 2. 디자인
-# ----------------------------------
+# =====================================
+# 2. 화면 디자인
+# =====================================
+
 st.markdown("""
 <style>
-    .main {
-        background-color: #FFF8FC;
-    }
+.stApp {
+    background-color: #FFF8FC;
+}
 
-    h1 {
-        color: #FF1493;
-        text-align: center;
-        font-weight: 900;
-    }
+h1 {
+    color: #FF1493;
+    text-align: center;
+    font-weight: 900;
+}
 
-    h3 {
-        color: #E754A5;
-    }
+h2, h3 {
+    color: #E754A5;
+}
 
-    div[data-testid="stMetric"] {
-        background-color: #FFE4F1;
-        padding: 15px;
-        border-radius: 15px;
-    }
+div[data-testid="stMetric"] {
+    background-color: #FFE4F1;
+    padding: 15px;
+    border-radius: 15px;
+}
 
-    .description {
-        text-align: center;
-        color: #888888;
-        font-size: 17px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------------
-# 3. 데이터 불러오기
-# ----------------------------------
+
+# =====================================
+# 3. CSV 데이터 불러오기
+# =====================================
+
 @st.cache_data
 def load_data():
+
     file_path = Path(__file__).parent / "countriesMBTI_16types.csv"
 
-    if not file_path.exists():
-        raise FileNotFoundError(
-            "countriesMBTI_16types.csv 파일을 찾을 수 없습니다."
-        )
+    data = pd.read_csv(file_path)
 
-    df = pd.read_csv(file_path)
+    data.columns = data.columns.str.strip()
 
-    df.columns = df.columns.str.strip()
-    df["Country"] = df["Country"].astype(str).str.strip()
-
-    return df
+    return data
 
 
 try:
     df = load_data()
 
-except Exception as e:
-    st.error(f"데이터를 불러오는 중 오류가 발생했습니다: {e}")
+except FileNotFoundError:
+    st.error(
+        "CSV 파일을 찾을 수 없습니다. "
+        "app.py와 countriesMBTI_16types.csv를 "
+        "같은 폴더에 넣어 주세요."
+    )
     st.stop()
 
-# MBTI 16가지 유형
-mbti_columns = [
+except Exception as error:
+    st.error(f"데이터 불러오기 오류: {error}")
+    st.stop()
+
+
+# =====================================
+# 4. MBTI 유형 설정
+# =====================================
+
+mbti_list = [
     "INFJ", "ISFJ", "INTP", "ISFP",
     "ENTP", "INFP", "ENTJ", "ISTP",
     "INTJ", "ESFP", "ESTJ", "ENFP",
     "ESTP", "ISTJ", "ENFJ", "ESFJ"
 ]
 
-# 데이터 확인
+required_columns = ["Country"] + mbti_list
+
 missing_columns = [
-    col for col in ["Country"] + mbti_columns
+    col for col in required_columns
     if col not in df.columns
 ]
 
 if missing_columns:
-    st.error(f"CSV 파일에 필요한 열이 없습니다: {missing_columns}")
+    st.error(f"CSV에 필요한 열이 없습니다: {missing_columns}")
     st.stop()
 
-# ----------------------------------
-# 4. 제목
-# ----------------------------------
+
+# =====================================
+# 5. 데이터 정리
+# =====================================
+
+df["Country"] = df["Country"].astype(str).str.strip()
+
+for mbti in mbti_list:
+    df[mbti] = pd.to_numeric(df[mbti], errors="coerce")
+
+df = df.dropna(subset=["Country"])
+
+
+# =====================================
+# 6. 제목
+# =====================================
+
 st.title("🌎 MBTI WORLD")
+
 st.markdown(
-    '<p class="description">세계 여러 나라의 MBTI 성향을 탐험해 보자! 💗</p>',
+    """
+    <p style="
+        text-align:center;
+        font-size:18px;
+        color:#888888;
+    ">
+    세계 여러 나라의 MBTI 성향을 탐험해 보자! 💗
+    </p>
+    """,
     unsafe_allow_html=True
 )
 
 st.divider()
 
-# ----------------------------------
-# 5. 국가 선택
-# ----------------------------------
+
+# =====================================
+# 7. 국가 선택
+# =====================================
+
 st.subheader("🌍 어느 나라를 탐험할까?")
 
-countries = sorted(df["Country"].dropna().unique().tolist())
+countries = sorted(df["Country"].unique().tolist())
+
+default_index = 0
+
+if "South Korea" in countries:
+    default_index = countries.index("South Korea")
 
 selected_country = st.selectbox(
     "국가를 선택해 주세요!",
     countries,
-    index=countries.index("South Korea")
-    if "South Korea" in countries else 0
+    index=default_index
 )
 
-# ----------------------------------
-# 6. 선택 국가 데이터 가져오기
-# ----------------------------------
+
+# =====================================
+# 8. 선택한 국가 데이터
+# =====================================
+
 country_data = df[
     df["Country"] == selected_country
 ].iloc[0]
 
-# MBTI 비율 데이터
 mbti_data = pd.DataFrame({
-    "MBTI": mbti_columns,
+    "MBTI": mbti_list,
     "비율": [
-        float(country_data[mbti]) * 100
-        for mbti in mbti_columns
+        country_data[mbti] * 100
+        for mbti in mbti_list
     ]
 })
 
-# 높은 비율 순서대로 정렬
+mbti_data["비율"] = mbti_data["비율"].fillna(0)
+
+# 비율이 높은 순서로 정렬
 mbti_data = mbti_data.sort_values(
     by="비율",
     ascending=False
 ).reset_index(drop=True)
 
-# ----------------------------------
-# 7. 주요 정보
-# ----------------------------------
+
+# =====================================
+# 9. 주요 통계
+# =====================================
+
 st.subheader(f"💗 {selected_country}의 MBTI 분석")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.metric(
-        label="🥇 가장 높은 MBTI",
-        value=mbti_data.iloc[0]["MBTI"]
+        "🥇 가장 높은 MBTI",
+        mbti_data.iloc[0]["MBTI"]
     )
 
 with col2:
     st.metric(
-        label="📊 가장 높은 비율",
-        value=f'{mbti_data.iloc[0]["비율"]:.2f}%'
+        "📊 가장 높은 비율",
+        f"{mbti_data.iloc[0]['비율']:.2f}%"
     )
 
 with col3:
     st.metric(
-        label="🌈 분석 유형",
-        value="16가지"
+        "🌈 분석 유형",
+        "16가지"
     )
 
 st.divider()
 
-# ----------------------------------
-# 8. 핫핑크 그라데이션 색상 만들기
-# ----------------------------------
-def make_gradient(start_color, end_color, steps):
 
-    start = tuple(
-        int(start_color[i:i+2], 16)
-        for i in (1, 3, 5)
-    )
+# =====================================
+# 10. 핫핑크 그라데이션
+# =====================================
 
-    end = tuple(
-        int(end_color[i:i+2], 16)
-        for i in (1, 3, 5)
-    )
-
-    colors = []
-
-    for i in range(steps):
-        ratio = i / max(steps - 1, 1)
-
-        color = tuple(
-            int(start[j] + (end[j] - start[j]) * ratio)
-            for j in range(3)
-        )
-
-        colors.append(
-            "#%02X%02X%02X" % color
-        )
-
-    return colors
-
-
-# 1위 진한 핫핑크 → 16위 연한 핑크
-pink_colors = make_gradient(
+pink_colors = [
     "#FF1493",
-    "#FFF0F6",
-    len(mbti_data)
-)
+    "#FF2E9F",
+    "#FF48AB",
+    "#FF62B7",
+    "#FF7CC3",
+    "#FF96CF",
+    "#FFB0DB",
+    "#FFC0E1",
+    "#FFCBE6",
+    "#FFD2EA",
+    "#FFD9EE",
+    "#FFE0F2",
+    "#FFE7F5",
+    "#FFEDF8",
+    "#FFF2FA",
+    "#FFF5FC"
+]
 
-# ----------------------------------
-# 9. 막대그래프
-# ----------------------------------
-st.subheader("📊 국가별 MBTI 비율")
+
+# =====================================
+# 11. 막대그래프
+# =====================================
+
+st.subheader("📊 MBTI 비율 막대그래프")
 
 fig = go.Figure()
 
@@ -216,26 +244,16 @@ fig.add_trace(
         x=mbti_data["비율"],
         y=mbti_data["MBTI"],
         orientation="h",
-
-        marker=dict(
-            color=pink_colors,
-            line=dict(
-                color="#FFFFFF",
-                width=1
-            )
-        ),
-
+        marker_color=pink_colors[:len(mbti_data)],
         text=[
             f"{value:.2f}%"
             for value in mbti_data["비율"]
         ],
-
         textposition="outside",
         textfont=dict(
-            size=13,
-            color="#555555"
+            color="#555555",
+            size=13
         ),
-
         hovertemplate=(
             "<b>%{y}</b><br>"
             "비율: %{x:.2f}%"
@@ -246,37 +264,31 @@ fig.add_trace(
 
 fig.update_layout(
     height=650,
-
-    xaxis=dict(
-        title="MBTI 비율 (%)",
-        showgrid=True,
-        gridcolor="#F5DCE9",
-        ticksuffix="%",
-        rangemode="tozero"
-    ),
-
-    yaxis=dict(
-        title="MBTI 유형",
-        autorange="reversed"
-    ),
-
     plot_bgcolor="#FFF8FC",
     paper_bgcolor="#FFF8FC",
-
+    showlegend=False,
     font=dict(
         family="Arial",
         size=13,
         color="#444444"
     ),
-
     margin=dict(
         l=60,
-        r=80,
+        r=90,
         t=30,
         b=60
     ),
-
-    showlegend=False
+    xaxis=dict(
+        title="MBTI 비율 (%)",
+        ticksuffix="%",
+        showgrid=True,
+        gridcolor="#F5DCE9",
+        rangemode="tozero"
+    ),
+    yaxis=dict(
+        title="MBTI 유형",
+        autorange="reversed"
+    )
 )
 
 st.plotly_chart(
@@ -284,60 +296,79 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# ----------------------------------
-# 10. MBTI 순위표
-# ----------------------------------
+
+# =====================================
+# 12. MBTI 순위표
+# =====================================
+
 st.subheader("🏆 MBTI 순위 TOP 16")
 
 ranking_data = mbti_data.copy()
 
-ranking_data.index = ranking_data.index + 1
-ranking_data.index.name = "순위"
+ranking_data.insert(
+    0,
+    "순위",
+    range(1, len(ranking_data) + 1)
+)
 
 ranking_data["비율"] = ranking_data["비율"].map(
-    lambda x: f"{x:.2f}%"
+    lambda value: f"{value:.2f}%"
 )
 
 st.dataframe(
     ranking_data,
-    use_container_width=True
+    use_container_width=True,
+    hide_index=True
 )
 
-# ----------------------------------
-# 11. CSV 다운로드
-# ----------------------------------
+
+# =====================================
+# 13. CSV 다운로드
+# =====================================
+
 st.divider()
 
-st.subheader("📥 데이터 다운로드")
+st.subheader("📥 분석 결과 다운로드")
 
-download_df = mbti_data.copy()
+download_data = mbti_data.copy()
 
-download_df["비율"] = download_df["비율"].round(2)
+download_data["비율"] = download_data["비율"].round(2)
 
-csv = download_df.to_csv(
+csv_data = download_data.to_csv(
     index=False,
     encoding="utf-8-sig"
 )
 
 st.download_button(
     label="💗 MBTI 분석 결과 다운로드",
-    data=csv,
-    file_name=f"{selected_country}_MBTI_analysis.csv",
+    data=csv_data,
+    file_name=f"{selected_country}_MBTI.csv",
     mime="text/csv"
 )
 
-# ----------------------------------
-# 12. 안내 문구
-# ----------------------------------
+
+# =====================================
+# 14. 안내 문구
+# =====================================
+
 st.divider()
 
-st.caption(
-    "💡 본 결과는 제공된 CSV 데이터에 기초한 국가별 MBTI 비율입니다. "
-    "실제 국민 전체의 성격이나 개인의 성격을 확정하는 자료는 아닙니다."
+st.info(
+    "💡 본 결과는 제공된 CSV 데이터에 기반한 MBTI 유형별 비율입니다. "
+    "실제 국가 전체 인구의 성격을 확정하는 통계는 아닙니다."
 )
 
 st.markdown(
-    "<center>💗 Made with Streamlit | MBTI WORLD 🌎</center>",
+    """
+    <div style="
+        text-align:center;
+        color:#FF69B4;
+        padding:20px;
+        font-size:16px;
+    ">
+        💗 Made with Streamlit | MBTI WORLD 🌎
+    </div>
+    """,
     unsafe_allow_html=True
 )
 ```
