@@ -2,8 +2,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from pathlib import Path
+import random
 
+from pathlib import Path
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -12,24 +13,60 @@ from sklearn.neighbors import KNeighborsClassifier
 
 
 # ==========================================
-# 1. 페이지 기본 설정
+# 1. 페이지 설정
 # ==========================================
 
 st.set_page_config(
-    page_title="🌸 아이리스 플라워 예측",
-    page_icon="🌺",
+    page_title="아이리스 플라워 예측 연구소",
+    page_icon="🌸",
     layout="wide"
 )
 
 
 # ==========================================
-# 2. 핑크 그라데이션 디자인
+# 2. 꽃잎 폭풍 애니메이션
 # ==========================================
 
-st.markdown("""
+flower_emojis = [
+    "🌸", "🌺", "🌷", "🌼",
+    "💮", "🪷", "✿", "❀", "🌹"
+]
+
+flower_html = ""
+
+for i in range(100):
+
+    left = random.randint(0, 100)
+    size = random.randint(16, 34)
+    duration = random.uniform(2.5, 5.5)
+    delay = random.uniform(0, 5.5)
+    sway = random.randint(-180, 180)
+
+    flower = random.choice(flower_emojis)
+
+    flower_html += f"""
+    <div class="flower"
+         style="
+            left:{left}%;
+            font-size:{size}px;
+            animation-duration:{duration}s;
+            animation-delay:-{delay}s;
+            --sway:{sway}px;
+         ">
+         {flower}
+    </div>
+    """
+
+
+# ==========================================
+# 3. 핑크 그라데이션 디자인
+# ==========================================
+
+st.markdown(f"""
 <style>
 
-.stApp {
+/* 전체 배경 */
+.stApp {{
     background:
         radial-gradient(
             circle at 10% 10%,
@@ -50,48 +87,48 @@ st.markdown("""
         );
 
     background-attachment: fixed;
-}
+}}
 
-/* 메인 제목 */
-h1 {
+/* 제목 */
+h1 {{
     color: #D63384 !important;
     font-weight: 900 !important;
     text-shadow: 2px 2px 8px white;
-}
+}}
 
 /* 소제목 */
-h2, h3 {
+h2, h3 {{
     color: #C21870 !important;
     font-weight: bold !important;
-}
+}}
 
 /* 일반 글씨 */
-p, label, .stMarkdown {
+p, label, .stMarkdown {{
     color: #71304F;
-}
+}}
 
-/* 탭 디자인 */
-button[data-baseweb="tab"] {
+/* 탭 */
+button[data-baseweb="tab"] {{
     color: #C21870 !important;
     font-weight: bold;
-}
+}}
 
 /* 선택 상자 */
-div[data-baseweb="select"] {
+div[data-baseweb="select"] {{
     background-color: #FFF5FA;
     border-radius: 12px;
-}
+}}
 
 /* 입력 영역 */
 div[data-testid="stNumberInput"],
-div[data-testid="stSlider"] {
+div[data-testid="stSlider"] {{
     background-color: rgba(255,255,255,0.45);
     border-radius: 15px;
     padding: 8px;
-}
+}}
 
 /* 결과 카드 */
-div[data-testid="stMetric"] {
+div[data-testid="stMetric"] {{
     background: linear-gradient(
         135deg,
         #FFFFFF,
@@ -101,10 +138,10 @@ div[data-testid="stMetric"] {
     border-radius: 18px;
     padding: 15px;
     box-shadow: 0 5px 15px rgba(214, 51, 132, 0.15);
-}
+}}
 
 /* 버튼 */
-.stButton button {
+.stButton button {{
     background: linear-gradient(
         90deg,
         #FF69B4,
@@ -114,60 +151,67 @@ div[data-testid="stMetric"] {
     border: none;
     border-radius: 15px;
     font-weight: bold;
-}
+}}
 
-/* 데이터 표 */
-div[data-testid="stDataFrame"] {
+/* 표 */
+div[data-testid="stDataFrame"] {{
     background-color: rgba(255,255,255,0.75);
     border-radius: 15px;
-}
+}}
 
-/* 꽃잎 애니메이션 */
-.flower {
+/* 꽃잎 */
+.flower {{
     position: fixed;
-    top: -50px;
+    top: -60px;
     z-index: 999;
     pointer-events: none;
-    animation-name: falling;
+    user-select: none;
+    animation-name: flowerFall;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-    opacity: 0.75;
-}
+    will-change: transform;
+    opacity: 0.9;
+    filter: drop-shadow(
+        0 2px 5px rgba(255,20,147,0.3)
+    );
+}}
 
-@keyframes falling {
-    0% {
-        transform: translateY(-50px) rotate(0deg);
+/* 빠르게 휘날리는 효과 */
+@keyframes flowerFall {{
+
+    0% {{
+        transform: translate3d(0, -60px, 0) rotate(0deg);
         opacity: 0;
-    }
+    }}
 
-    10% {
-        opacity: 0.9;
-    }
+    10% {{
+        opacity: 1;
+    }}
 
-    100% {
-        transform: translateY(110vh) rotate(720deg);
+    50% {{
+        transform: translate3d(var(--sway), 50vh, 0) rotate(360deg);
+        opacity: 0.95;
+    }}
+
+    100% {{
+        transform: translate3d(
+            calc(var(--sway) * -1),
+            110vh,
+            0
+        ) rotate(900deg);
         opacity: 0;
-    }
-}
+    }}
+}}
 
 </style>
 
-<div class="flower" style="left:3%;font-size:24px;animation-duration:8s;">🌸</div>
-<div class="flower" style="left:12%;font-size:18px;animation-duration:11s;animation-delay:2s;">🌷</div>
-<div class="flower" style="left:22%;font-size:27px;animation-duration:9s;animation-delay:1s;">🌺</div>
-<div class="flower" style="left:33%;font-size:20px;animation-duration:12s;animation-delay:4s;">🌸</div>
-<div class="flower" style="left:44%;font-size:25px;animation-duration:8s;animation-delay:3s;">🌼</div>
-<div class="flower" style="left:55%;font-size:18px;animation-duration:10s;animation-delay:1s;">🌷</div>
-<div class="flower" style="left:66%;font-size:28px;animation-duration:9s;animation-delay:5s;">🌸</div>
-<div class="flower" style="left:77%;font-size:22px;animation-duration:11s;animation-delay:2s;">🌺</div>
-<div class="flower" style="left:88%;font-size:25px;animation-duration:8s;animation-delay:4s;">🌼</div>
-<div class="flower" style="left:96%;font-size:20px;animation-duration:12s;animation-delay:1s;">🌸</div>
+{flower_html}
 
 """, unsafe_allow_html=True)
 
 
 # ==========================================
-# 3. CSV 파일 불러오기
+# 4. CSV 파일 불러오기
 # ==========================================
 
 @st.cache_data
@@ -192,13 +236,12 @@ def load_data():
     if file_path is None:
         raise FileNotFoundError(
             "Iris.csv 파일을 찾을 수 없습니다. "
-            "앱의 상위 폴더에 Iris.csv 파일을 넣어주세요."
+            "상위 폴더에 CSV 파일을 넣어주세요."
         )
 
     for encoding in ["cp949", "utf-8-sig", "utf-8"]:
         try:
-            data = pd.read_csv(file_path, encoding=encoding)
-            return data
+            return pd.read_csv(file_path, encoding=encoding)
         except UnicodeDecodeError:
             continue
 
@@ -209,12 +252,12 @@ try:
     df = load_data()
 
 except Exception as e:
-    st.error(f"데이터 파일을 불러오는 중 문제가 발생했습니다: {e}")
+    st.error(f"데이터 파일 오류: {e}")
     st.stop()
 
 
 # ==========================================
-# 4. 데이터 확인
+# 5. 데이터 확인
 # ==========================================
 
 required_columns = [
@@ -226,7 +269,8 @@ required_columns = [
 ]
 
 missing_columns = [
-    col for col in required_columns if col not in df.columns
+    col for col in required_columns
+    if col not in df.columns
 ]
 
 if missing_columns:
@@ -246,7 +290,7 @@ species_names = sorted(df["품종"].unique())
 
 
 # ==========================================
-# 5. 제목
+# 6. 제목과 소개
 # ==========================================
 
 st.title("🌸 아이리스 플라워 예측 연구소 🌸")
@@ -257,15 +301,16 @@ st.markdown("""
 꽃의 길이와 너비를 입력하면
 세 가지 인공지능 알고리즘이 꽃의 품종을 예측해 줘.
 
-**예쁜 꽃 모양 점은 실제 데이터이고,
-큰 꽃 이모지 🌺는 내가 입력한 데이터야!**
+🌷 작은 꽃 모양은 실제 데이터야!
+
+🌺 커다란 꽃 이모지는 내가 입력한 데이터야!
 """)
 
 st.divider()
 
 
 # ==========================================
-# 6. 알고리즘 만들기
+# 7. 인공지능 알고리즘
 # ==========================================
 
 models = {
@@ -287,7 +332,7 @@ models = {
 
 
 # ==========================================
-# 7. 예측 및 그래프 함수
+# 8. 예측 함수
 # ==========================================
 
 def prediction_section(x_col, y_col, tab_name):
@@ -301,6 +346,7 @@ def prediction_section(x_col, y_col, tab_name):
     col1, col2 = st.columns(2)
 
     with col1:
+
         x_min = float(df[x_col].min())
         x_max = float(df[x_col].max())
 
@@ -313,6 +359,7 @@ def prediction_section(x_col, y_col, tab_name):
         )
 
     with col2:
+
         y_min = float(df[y_col].min())
         y_max = float(df[y_col].max())
 
@@ -332,6 +379,11 @@ def prediction_section(x_col, y_col, tab_name):
     X = df[[x_col, y_col]]
     y = df["품종"]
 
+    input_data = pd.DataFrame(
+        [[x_value, y_value]],
+        columns=[x_col, y_col]
+    )
+
     # 세 가지 알고리즘 예측
     predictions = {}
 
@@ -339,17 +391,12 @@ def prediction_section(x_col, y_col, tab_name):
 
         model.fit(X, y)
 
-        prediction = model.predict(
-            pd.DataFrame(
-                [[x_value, y_value]],
-                columns=[x_col, y_col]
-            )
-        )[0]
+        prediction = model.predict(input_data)[0]
 
         predictions[model_name] = prediction
 
     # ======================================
-    # 예측 결과
+    # 알고리즘별 예측 결과
     # ======================================
 
     st.markdown("## 💖 인공지능 예측 결과")
@@ -384,30 +431,32 @@ def prediction_section(x_col, y_col, tab_name):
     st.markdown("### 🏆 최종 예측 결과")
 
     if len(winners) == 1:
+
         st.success(
-            f"세 알고리즘의 다수결 결과는 **{winners[0]}** 입니다! 🌺"
+            f"다수결 결과는 **{winners[0]}** 입니다! 🌺"
         )
+
     else:
+
         st.info(
-            "현재 입력값에서는 공동 1위가 나왔어요: "
-            + ", ".join(winners)
+            "공동 1위 결과: " + ", ".join(winners)
         )
 
     # ======================================
-    # 그래프
+    # 꽃 그래프
     # ======================================
 
     st.markdown("## 🌸 아이리스 꽃 분포 그래프")
 
     fig = go.Figure()
 
-    # 품종별 꽃 모양 데이터 점
     flower_colors = [
         "#FF1493",
         "#C71585",
         "#FF69B4"
     ]
 
+    # 실제 데이터: 꽃 모양
     for i, species in enumerate(species_names):
 
         species_data = df[df["품종"] == species]
@@ -435,7 +484,7 @@ def prediction_section(x_col, y_col, tab_name):
             )
         )
 
-    # 사용자가 입력한 꽃: 아름다운 꽃 이모지
+    # 사용자 입력: 아름다운 꽃
     fig.add_trace(
         go.Scatter(
             x=[x_value],
@@ -463,11 +512,13 @@ def prediction_section(x_col, y_col, tab_name):
         height=600,
         plot_bgcolor="rgba(255,255,255,0.72)",
         paper_bgcolor="rgba(255,255,255,0.0)",
+
         font=dict(
             family="Arial",
             color="#8B2252",
             size=13
         ),
+
         title=dict(
             text="🌷 실제 아이리스 데이터와 나의 꽃 비교",
             font=dict(
@@ -475,16 +526,25 @@ def prediction_section(x_col, y_col, tab_name):
                 color="#D63384"
             )
         ),
+
         legend=dict(
             bgcolor="rgba(255,255,255,0.65)",
             bordercolor="#FFB6D9",
             borderwidth=1
         ),
-        margin=dict(l=40, r=30, t=80, b=50),
+
+        margin=dict(
+            l=40,
+            r=30,
+            t=80,
+            b=50
+        ),
+
         xaxis=dict(
             gridcolor="#F8C6DF",
             zerolinecolor="#F8C6DF"
         ),
+
         yaxis=dict(
             gridcolor="#F8C6DF",
             zerolinecolor="#F8C6DF"
@@ -504,7 +564,7 @@ def prediction_section(x_col, y_col, tab_name):
     )
 
     st.caption(
-        "🌸 분홍색 꽃 점은 실제 데이터이고, "
+        "🌸 작은 꽃 점은 실제 데이터이고, "
         "큰 꽃 이모지 🌺는 입력한 값이에요."
     )
 
@@ -517,10 +577,11 @@ def prediction_section(x_col, y_col, tab_name):
     with st.expander("🌸 1. 서포트 벡터 머신 (SVM)"):
 
         st.write("""
-        SVM은 데이터를 가장 잘 구분할 수 있는 경계선을 찾는 알고리즘이야.
+        SVM은 데이터를 가장 잘 구분할 수 있는 경계선을
+        찾는 알고리즘이야.
 
         - 꽃의 특징을 바탕으로 품종을 구분해.
-        - 데이터 사이의 경계를 최대한 잘 나누려고 해.
+        - 데이터 사이의 경계를 잘 나누려고 해.
         - 복잡한 데이터 분류에도 활용할 수 있어.
         """)
 
@@ -528,11 +589,11 @@ def prediction_section(x_col, y_col, tab_name):
 
         st.write("""
         랜덤 포레스트는 여러 개의 결정 트리를 만들어
-        각각의 예측 결과를 모아 최종 결과를 결정하는 알고리즘이야.
+        각각의 예측 결과를 모으는 알고리즘이야.
 
         - 여러 결정 트리의 결과를 종합해.
-        - 하나의 나무보다 안정적인 예측을 기대할 수 있어.
-        - 다양한 분류 문제에 많이 사용돼.
+        - 다양한 분류 문제에 활용돼.
+        - 여러 트리를 함께 사용해 예측해.
         """)
 
     with st.expander("🌷 3. K-최근접 이웃 (KNN)"):
@@ -547,7 +608,7 @@ def prediction_section(x_col, y_col, tab_name):
         """)
 
     # ======================================
-    # 예측 결과 비교표
+    # 결과 비교표
     # ======================================
 
     st.markdown("## 💗 알고리즘별 결과 비교")
@@ -564,13 +625,13 @@ def prediction_section(x_col, y_col, tab_name):
     )
 
     st.info(
-        "💡 입력한 꽃의 특성을 조금씩 바꾸면서 "
+        "💡 입력값을 조금씩 바꾸면서 "
         "세 알고리즘의 예측 결과가 어떻게 달라지는지 확인해 봐!"
     )
 
 
 # ==========================================
-# 8. 두 가지 예측 탭
+# 9. 두 가지 예측 탭
 # ==========================================
 
 tab1, tab2 = st.tabs([
@@ -596,7 +657,7 @@ with tab2:
 
 
 # ==========================================
-# 9. 하단 안내
+# 10. 하단 디자인
 # ==========================================
 
 st.divider()
@@ -604,13 +665,21 @@ st.divider()
 st.markdown("""
 <div style="
     text-align:center;
-    background:linear-gradient(90deg,#FFF0F5,#FFB6D9,#FFF0F5);
-    padding:22px;
-    border-radius:20px;
+    background:linear-gradient(
+        90deg,
+        #FFF0F5,
+        #FFB6D9,
+        #FF69B4,
+        #FFB6D9,
+        #FFF0F5
+    );
+    padding:25px;
+    border-radius:22px;
     border:2px solid white;
+    box-shadow:0 5px 20px rgba(214,51,132,0.2);
 ">
     <h3 style="color:#C21870;">
-        🌸 오늘도 예쁜 꽃처럼 반짝이는 하루! 🌸
+        🌸 오늘도 꽃처럼 반짝이는 하루! 🌸
     </h3>
     <p style="color:#9C2862;">
         AI와 함께 아이리스 꽃의 비밀을 찾아보자 💗
