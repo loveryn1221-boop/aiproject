@@ -16,40 +16,32 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-/* 기본 배경 */
 .stApp {
-    background:
-        linear-gradient(135deg, #fff5f8, #fffaf0, #ffeaf2);
+    background: linear-gradient(135deg, #fff5f8, #fffaf0, #ffeaf2);
     background-attachment: fixed;
 }
 
-/* 실제 앱 콘텐츠를 배경 위에 배치 */
 .stMainBlockContainer {
     position: relative;
     z-index: 2;
 }
 
-/* 움직이는 이모티콘 배경 */
 .food-animation {
     position: fixed;
     inset: 0;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
     pointer-events: none;
     z-index: 1;
 }
 
-/* 이모티콘 공통 디자인 */
 .food {
     position: absolute;
     font-size: 35px;
-    opacity: 0.55;
-    will-change: transform;
+    opacity: 0.45;
     animation: flyAcross linear infinite;
+    will-change: transform;
 }
 
-/* 빠르게 왼쪽에서 오른쪽으로 */
 @keyframes flyAcross {
     0% {
         transform: translate(-15vw, 25vh) rotate(0deg);
@@ -59,7 +51,6 @@ st.markdown("""
     }
 }
 
-/* 반대 방향으로 이동 */
 @keyframes flyBack {
     0% {
         transform: translate(115vw, 35vh) rotate(0deg);
@@ -69,56 +60,39 @@ st.markdown("""
     }
 }
 
-/* 위에서 아래로 이동 */
-@keyframes flyDown {
-    0% {
-        transform: translate(10vw, -15vh) rotate(0deg);
-    }
-    100% {
-        transform: translate(-10vw, 115vh) rotate(540deg);
-    }
-}
+.food:nth-child(1) {top:10%; animation-duration:6s;}
+.food:nth-child(2) {top:30%; animation-duration:8s; animation-name:flyBack;}
+.food:nth-child(3) {top:50%; animation-duration:5s;}
+.food:nth-child(4) {top:70%; animation-duration:7s; animation-name:flyBack;}
+.food:nth-child(5) {top:85%; animation-duration:6s;}
+.food:nth-child(6) {top:20%; animation-duration:5s; animation-name:flyBack;}
+.food:nth-child(7) {top:40%; animation-duration:8s;}
+.food:nth-child(8) {top:60%; animation-duration:6s; animation-name:flyBack;}
+.food:nth-child(9) {top:80%; animation-duration:5s;}
+.food:nth-child(10) {top:15%; animation-duration:7s; animation-name:flyBack;}
+.food:nth-child(11) {top:35%; animation-duration:6s;}
+.food:nth-child(12) {top:55%; animation-duration:5s; animation-name:flyBack;}
+.food:nth-child(13) {top:75%; animation-duration:8s;}
+.food:nth-child(14) {top:5%; animation-duration:6s; animation-name:flyBack;}
+.food:nth-child(15) {top:25%; animation-duration:7s;}
+.food:nth-child(16) {top:45%; animation-duration:5s; animation-name:flyBack;}
+.food:nth-child(17) {top:65%; animation-duration:8s;}
+.food:nth-child(18) {top:90%; animation-duration:6s; animation-name:flyBack;}
+.food:nth-child(19) {top:12%; animation-duration:5s;}
+.food:nth-child(20) {top:52%; animation-duration:7s; animation-name:flyBack;}
+.food:nth-child(21) {top:72%; animation-duration:6s;}
+.food:nth-child(22) {top:32%; animation-duration:8s; animation-name:flyBack;}
+.food:nth-child(23) {top:88%; animation-duration:5s;}
+.food:nth-child(24) {top:18%; animation-duration:7s; animation-name:flyBack;}
 
-/* 각 이모티콘 위치와 속도 */
-.food:nth-child(1)  {top:10%; left:0%; animation-duration:6s; animation-delay:-2s;}
-.food:nth-child(2)  {top:30%; left:5%; animation-duration:8s; animation-delay:-5s; animation-name:flyBack;}
-.food:nth-child(3)  {top:50%; left:0%; animation-duration:5s; animation-delay:-3s;}
-.food:nth-child(4)  {top:70%; left:10%; animation-duration:9s; animation-delay:-6s; animation-name:flyBack;}
-.food:nth-child(5)  {top:85%; left:0%; animation-duration:7s; animation-delay:-1s;}
-.food:nth-child(6)  {top:20%; left:20%; animation-duration:6s; animation-delay:-4s; animation-name:flyDown;}
-.food:nth-child(7)  {top:40%; left:30%; animation-duration:8s; animation-delay:-3s;}
-.food:nth-child(8)  {top:60%; left:40%; animation-duration:5s; animation-delay:-2s; animation-name:flyBack;}
-.food:nth-child(9)  {top:80%; left:50%; animation-duration:7s; animation-delay:-5s;}
-.food:nth-child(10) {top:15%; left:60%; animation-duration:6s; animation-delay:-3s; animation-name:flyDown;}
-.food:nth-child(11) {top:35%; left:70%; animation-duration:9s; animation-delay:-6s;}
-.food:nth-child(12) {top:55%; left:80%; animation-duration:5s; animation-delay:-2s; animation-name:flyBack;}
-.food:nth-child(13) {top:75%; left:90%; animation-duration:7s; animation-delay:-4s;}
-.food:nth-child(14) {top:5%; left:40%; animation-duration:8s; animation-delay:-7s;}
-.food:nth-child(15) {top:25%; left:90%; animation-duration:6s; animation-delay:-1s; animation-name:flyBack;}
-.food:nth-child(16) {top:45%; left:15%; animation-duration:5s; animation-delay:-4s;}
-.food:nth-child(17) {top:65%; left:65%; animation-duration:8s; animation-delay:-2s;}
-.food:nth-child(18) {top:90%; left:75%; animation-duration:6s; animation-delay:-5s; animation-name:flyDown;}
-.food:nth-child(19) {top:12%; left:80%; animation-duration:7s; animation-delay:-3s;}
-.food:nth-child(20) {top:52%; left:50%; animation-duration:5s; animation-delay:-1s; animation-name:flyBack;}
-.food:nth-child(21) {top:72%; left:25%; animation-duration:9s; animation-delay:-4s;}
-.food:nth-child(22) {top:32%; left:55%; animation-duration:6s; animation-delay:-2s;}
-.food:nth-child(23) {top:88%; left:35%; animation-duration:7s; animation-delay:-6s; animation-name:flyBack;}
-.food:nth-child(24) {top:18%; left:45%; animation-duration:5s; animation-delay:-3s;}
-
-/* 모바일 화면 */
 @media (max-width: 768px) {
-    .food {
-        font-size: 23px;
-        opacity: 0.4;
-    }
+    .food {font-size:22px;}
 }
 
-/* 제목 */
 h1, h2, h3 {
     color: #d63384 !important;
 }
 
-/* 버튼 */
 .stButton > button {
     background: linear-gradient(90deg, #ff69a4, #ff9a76);
     color: white;
@@ -134,9 +108,8 @@ h1, h2, h3 {
     color: white;
 }
 
-/* 음식 카드 */
 div[data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: rgba(255,255,255,0.88);
+    background-color: rgba(255,255,255,0.9);
     border-radius: 18px;
     border: 1px solid #ffd1df;
 }
@@ -145,6 +118,28 @@ div[data-testid="stMetric"] {
     background: #fff3f7;
     padding: 12px;
     border-radius: 12px;
+}
+
+.selection-notice {
+    background: linear-gradient(110deg, #ffe0ed, #fff0d9);
+    border: 3px solid #ff8bb8;
+    border-radius: 22px;
+    padding: 25px 15px;
+    text-align: center;
+    margin: 15px 0 25px 0;
+    box-shadow: 0 5px 15px rgba(255,105,164,0.15);
+}
+
+.selection-notice h2 {
+    color: #d63384 !important;
+    font-size: 30px !important;
+    margin-bottom: 12px;
+}
+
+.selection-notice p {
+    color: #a83d70;
+    font-size: 19px;
+    font-weight: bold;
 }
 </style>
 
@@ -177,7 +172,7 @@ div[data-testid="stMetric"] {
 """, unsafe_allow_html=True)
 
 # =========================================
-# 2. 음식 이름 한국어 변환
+# 2. 음식 이름 한국어 사전
 # =========================================
 
 food_names = {
@@ -283,7 +278,7 @@ def korean_name(label):
     )
 
 # =========================================
-# 3. 데이터 불러오기
+# 3. CSV 데이터 불러오기
 # =========================================
 
 @st.cache_data
@@ -340,227 +335,373 @@ df = load_data()
 # =========================================
 
 st.title("🍓 나만의 맞춤형 음식 추천!")
+
 st.markdown("""
 ### 🍽️ 맛있는 음식, 내 취향대로 찾아보자!
-
 원하는 영양 성분을 선택하면 가장 잘 맞는 음식을 추천해 줄게요.
 """)
 
-st.divider()
+# 여러 개 선택 안내를 크게 표시
+st.markdown("""
+<div class="selection-notice">
+    <h2>📢 여러 개를 선택할 수 있어요!</h2>
+    <p>각 영양 성분에서 원하는 범위를 여러 개 골라보세요!</p>
+    <p>예시: 칼로리 100~200 + 300~400을 동시에 선택 가능!</p>
+    <p>💗 선택한 범위 중 하나라도 만족하면 검색돼요!</p>
+</div>
+""", unsafe_allow_html=True)
 
 # =========================================
-# 5. 영양 성분 선택
+# 5. 선택 범위 설정
 # =========================================
 
-calorie_options = [f"{i} ~ {i+100}" for i in range(0, 1000, 100)]
-protein_options = [f"{i} ~ {i+20}" for i in range(0, 60, 20)]
-fat_options = [f"{i} ~ {i+20}" for i in range(0, 100, 20)]
-carb_options = [f"{i} ~ {i+20}" for i in range(0, 100, 20)]
+calorie_options = [
+    f"{i} ~ {i+100}"
+    for i in range(0, 1000, 100)
+]
+
+protein_options = [
+    f"{i} ~ {i+20}"
+    for i in range(0, 60, 20)
+]
+
+fat_options = [
+    f"{i} ~ {i+20}"
+    for i in range(0, 100, 20)
+]
+
+carb_options = [
+    f"{i} ~ {i+20}"
+    for i in range(0, 100, 20)
+]
+
+# =========================================
+# 6. 다중 선택 화면
+# =========================================
+
+st.subheader("🎀 원하는 영양 성분 범위를 선택하세요!")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🔥 칼로리")
-    calorie_choice = st.selectbox(
-        "칼로리 범위 (kcal)", calorie_options
+
+    st.markdown("### 🔥 칼로리")
+
+    calorie_choices = st.multiselect(
+        "칼로리 범위 (kcal) - 여러 개 선택 가능",
+        options=calorie_options,
+        placeholder="원하는 칼로리 범위를 모두 선택하세요"
     )
 
-    st.subheader("💪 단백질")
-    protein_choice = st.selectbox(
-        "단백질 범위 (g)", protein_options
+    st.markdown("### 💪 단백질")
+
+    protein_choices = st.multiselect(
+        "단백질 범위 (g) - 여러 개 선택 가능",
+        options=protein_options,
+        placeholder="원하는 단백질 범위를 모두 선택하세요"
     )
 
 with col2:
-    st.subheader("🥑 지방")
-    fat_choice = st.selectbox(
-        "지방 범위 (g)", fat_options
+
+    st.markdown("### 🥑 지방")
+
+    fat_choices = st.multiselect(
+        "지방 범위 (g) - 여러 개 선택 가능",
+        options=fat_options,
+        placeholder="원하는 지방 범위를 모두 선택하세요"
     )
 
-    st.subheader("🍞 탄수화물")
-    carb_choice = st.selectbox(
-        "탄수화물 범위 (g)", carb_options
+    st.markdown("### 🍞 탄수화물")
+
+    carb_choices = st.multiselect(
+        "탄수화물 범위 (g) - 여러 개 선택 가능",
+        options=carb_options,
+        placeholder="원하는 탄수화물 범위를 모두 선택하세요"
     )
-
-
-def get_range(choice):
-    start, end = choice.split(" ~ ")
-    return int(start), int(end)
-
-
-cal_min, cal_max = get_range(calorie_choice)
-pro_min, pro_max = get_range(protein_choice)
-fat_min, fat_max = get_range(fat_choice)
-carb_min, carb_max = get_range(carb_choice)
 
 # =========================================
-# 6. 선택 조건 표시
+# 7. 선택한 범위 숫자로 변환
+# =========================================
+
+def convert_ranges(choices):
+    return [
+        tuple(map(int, choice.split(" ~ ")))
+        for choice in choices
+    ]
+
+
+cal_ranges = convert_ranges(calorie_choices)
+pro_ranges = convert_ranges(protein_choices)
+fat_ranges = convert_ranges(fat_choices)
+carb_ranges = convert_ranges(carb_choices)
+
+# =========================================
+# 8. 선택 조건 확인
 # =========================================
 
 st.divider()
-st.subheader("📝 선택한 영양 성분")
+st.subheader("📝 내가 선택한 조건")
 
-a, b, c, d = st.columns(4)
+if all([
+    cal_ranges,
+    pro_ranges,
+    fat_ranges,
+    carb_ranges
+]):
 
-a.metric("🔥 칼로리", f"{cal_min}~{cal_max} kcal")
-b.metric("💪 단백질", f"{pro_min}~{pro_max} g")
-c.metric("🥑 지방", f"{fat_min}~{fat_max} g")
-d.metric("🍞 탄수화물", f"{carb_min}~{carb_max} g")
-
-st.divider()
-
-# =========================================
-# 7. 음식 추천
-# =========================================
-
-if st.button("🍓 맛있는 음식 추천받기!", use_container_width=True):
-
-    exact = df[
-        (df["calories"] >= cal_min) &
-        (df["calories"] < cal_max) &
-        (df["protein"] >= pro_min) &
-        (df["protein"] < pro_max) &
-        (df["fats"] >= fat_min) &
-        (df["fats"] < fat_max) &
-        (df["carbohydrates"] >= carb_min) &
-        (df["carbohydrates"] < carb_max)
-    ].copy()
-
-    st.divider()
-    st.header("🎀 추천 음식")
-
-    # =====================================
-    # 조건에 맞는 음식이 있는 경우
-    # =====================================
-
-    if not exact.empty:
-
-        st.success(
-            f"🎉 선택한 조건에 딱 맞는 음식 {len(exact)}개를 찾았어요!"
+    def format_choices(choices, unit):
+        return ", ".join(
+            f"{choice} {unit}"
+            for choice in choices
         )
 
-        result = exact.sort_values("calories")
+    c1, c2 = st.columns(2)
 
-    # =====================================
-    # 조건에 맞는 음식이 없는 경우
-    # =====================================
-
-    else:
-
-        st.warning(
-            "😢 아쉽지만 선택한 네 가지 조건을 모두 만족하는 음식이 없어요."
+    with c1:
+        st.info(
+            "🔥 칼로리\n\n" +
+            format_choices(calorie_choices, "kcal")
         )
 
         st.info(
-            "대신 선택한 영양 성분과 가장 비슷한 음식 5개를 추천해 드릴게요! 💗"
+            "💪 단백질\n\n" +
+            format_choices(protein_choices, "g")
         )
 
-        similar = df.copy()
-
-        # 각 영양 성분이 선택 범위에서 얼마나 벗어났는지 계산
-        similar["calorie_diff"] = np.maximum(
-            cal_min - similar["calories"], 0
-        ) + np.maximum(
-            similar["calories"] - cal_max, 0
+    with c2:
+        st.info(
+            "🥑 지방\n\n" +
+            format_choices(fat_choices, "g")
         )
 
-        similar["protein_diff"] = np.maximum(
-            pro_min - similar["protein"], 0
-        ) + np.maximum(
-            similar["protein"] - pro_max, 0
+        st.info(
+            "🍞 탄수화물\n\n" +
+            format_choices(carb_choices, "g")
         )
 
-        similar["fat_diff"] = np.maximum(
-            fat_min - similar["fats"], 0
-        ) + np.maximum(
-            similar["fats"] - fat_max, 0
-        )
+else:
+    st.warning("네 가지 영양 성분에서 각각 하나 이상의 범위를 선택해 주세요!")
 
-        similar["carb_diff"] = np.maximum(
-            carb_min - similar["carbohydrates"], 0
-        ) + np.maximum(
-            similar["carbohydrates"] - carb_max, 0
-        )
-
-        # 영양 성분별 범위 간격을 기준으로 정규화
-        similar["similarity_score"] = np.sqrt(
-            (similar["calorie_diff"] / 100) ** 2 +
-            (similar["protein_diff"] / 20) ** 2 +
-            (similar["fat_diff"] / 20) ** 2 +
-            (similar["carb_diff"] / 20) ** 2
-        )
-
-        result = similar.sort_values(
-            "similarity_score"
-        ).head(5)
-
-        st.subheader("🏆 가장 비슷한 음식 TOP 5")
-        st.caption("점수가 낮을수록 선택한 영양 조건에 가까워요.")
-
-    # =====================================
-    # 8. 추천 음식 카드 출력
-    # =====================================
-
-    for rank, (_, row) in enumerate(result.iterrows(), 1):
-
-        name = korean_name(row["label"])
-
-        with st.container(border=True):
-
-            if exact.empty:
-                st.subheader(f"🏆 {rank}위 | 🍽️ {name}")
-            else:
-                st.subheader(f"🍽️ {name}")
-
-            st.caption(f"제공량: {row['weight']}g")
-
-            x1, x2, x3, x4 = st.columns(4)
-
-            x1.metric("🔥 칼로리", f"{row['calories']} kcal")
-            x2.metric("💪 단백질", f"{row['protein']} g")
-            x3.metric("🥑 지방", f"{row['fats']} g")
-            x4.metric("🍞 탄수화물", f"{row['carbohydrates']} g")
-
-            if exact.empty:
-                st.caption(
-                    f"선택 조건과의 차이 점수: "
-                    f"{row['similarity_score']:.2f}"
-                )
-
-    # =====================================
-    # 9. 전체 결과 표
-    # =====================================
-
-    st.divider()
-    st.subheader("📊 음식 영양 정보 한눈에 보기")
-
-    display = result.copy()
-    display["음식 이름"] = display["label"].apply(korean_name)
-
-    display = display[
-        [
-            "음식 이름",
-            "weight",
-            "calories",
-            "protein",
-            "fats",
-            "carbohydrates"
-        ]
-    ].rename(columns={
-        "weight": "섭취량(g)",
-        "calories": "칼로리(kcal)",
-        "protein": "단백질(g)",
-        "fats": "지방(g)",
-        "carbohydrates": "탄수화물(g)"
-    })
-
-    st.dataframe(
-        display,
-        use_container_width=True,
-        hide_index=True
-    )
+st.divider()
 
 # =========================================
-# 10. 하단 장식
+# 9. 여러 범위 중 하나라도 만족하는지 확인
+# =========================================
+
+def matches_ranges(series, ranges):
+    result = pd.Series(False, index=series.index)
+
+    for start, end in ranges:
+        result |= (
+            (series >= start) &
+            (series < end)
+        )
+
+    return result
+
+
+# =========================================
+# 10. 선택 범위와의 최소 거리 계산
+# =========================================
+
+def distance_to_ranges(series, ranges, interval_width):
+
+    distances = []
+
+    for start, end in ranges:
+
+        distance = np.maximum(
+            np.maximum(start - series, 0),
+            series - end
+        )
+
+        distances.append(distance / interval_width)
+
+    return pd.concat(distances, axis=1).min(axis=1)
+
+
+# =========================================
+# 11. 음식 추천 버튼
+# =========================================
+
+if st.button(
+    "🍓 나에게 맞는 음식 추천받기!",
+    use_container_width=True
+):
+
+    # 네 항목 모두 선택했는지 확인
+    if not all([
+        cal_ranges,
+        pro_ranges,
+        fat_ranges,
+        carb_ranges
+    ]):
+
+        st.error(
+            "⚠️ 칼로리, 단백질, 지방, 탄수화물 범위를 모두 선택해 주세요!"
+        )
+
+    else:
+
+        # 네 가지 영양 조건을 각각 검색
+        exact = df[
+            matches_ranges(df["calories"], cal_ranges) &
+            matches_ranges(df["protein"], pro_ranges) &
+            matches_ranges(df["fats"], fat_ranges) &
+            matches_ranges(df["carbohydrates"], carb_ranges)
+        ].copy()
+
+        st.divider()
+        st.header("🎀 음식 추천 결과")
+
+        # =================================
+        # 12. 정확히 일치하는 음식
+        # =================================
+
+        if not exact.empty:
+
+            st.success(
+                f"🎉 선택한 조건에 맞는 음식 {len(exact)}개를 찾았어요!"
+            )
+
+            result = exact.sort_values("calories")
+
+        # =================================
+        # 13. 비슷한 음식 추천
+        # =================================
+
+        else:
+
+            st.warning(
+                "😢 선택한 네 가지 조건을 모두 만족하는 음식이 없어요!"
+            )
+
+            st.info(
+                "💗 걱정하지 마세요! "
+                "선택한 영양 성분과 가장 비슷한 음식 5개를 추천해 드릴게요."
+            )
+
+            similar = df.copy()
+
+            # 각 항목에서 선택한 범위 중 가장 가까운 범위까지의 거리
+            similar["calorie_diff"] = distance_to_ranges(
+                similar["calories"], cal_ranges, 100
+            )
+
+            similar["protein_diff"] = distance_to_ranges(
+                similar["protein"], pro_ranges, 20
+            )
+
+            similar["fat_diff"] = distance_to_ranges(
+                similar["fats"], fat_ranges, 20
+            )
+
+            similar["carb_diff"] = distance_to_ranges(
+                similar["carbohydrates"], carb_ranges, 20
+            )
+
+            # 네 가지 영양 성분을 종합한 유사도 점수
+            similar["similarity_score"] = np.sqrt(
+                similar["calorie_diff"] ** 2 +
+                similar["protein_diff"] ** 2 +
+                similar["fat_diff"] ** 2 +
+                similar["carb_diff"] ** 2
+            )
+
+            result = similar.sort_values(
+                "similarity_score"
+            ).head(5)
+
+            st.subheader("🏆 가장 비슷한 음식 TOP 5")
+            st.caption(
+                "점수가 낮을수록 선택한 영양 조건에 가까워요."
+            )
+
+        # =================================
+        # 14. 추천 음식 카드
+        # =================================
+
+        for rank, (_, row) in enumerate(result.iterrows(), 1):
+
+            name = korean_name(row["label"])
+
+            with st.container(border=True):
+
+                if exact.empty:
+                    st.subheader(f"🏆 {rank}위 | 🍽️ {name}")
+                else:
+                    st.subheader(f"🍽️ {name}")
+
+                st.caption(
+                    f"제공량: {row['weight']}g"
+                )
+
+                a, b, c, d = st.columns(4)
+
+                a.metric(
+                    "🔥 칼로리",
+                    f"{row['calories']} kcal"
+                )
+
+                b.metric(
+                    "💪 단백질",
+                    f"{row['protein']} g"
+                )
+
+                c.metric(
+                    "🥑 지방",
+                    f"{row['fats']} g"
+                )
+
+                d.metric(
+                    "🍞 탄수화물",
+                    f"{row['carbohydrates']} g"
+                )
+
+                if exact.empty:
+                    st.caption(
+                        f"조건과의 차이 점수: "
+                        f"{row['similarity_score']:.2f}"
+                    )
+
+        # =================================
+        # 15. 전체 결과 표
+        # =================================
+
+        st.divider()
+        st.subheader("📊 추천 음식 영양 정보")
+
+        display = result.copy()
+
+        display["음식 이름"] = display["label"].apply(
+            korean_name
+        )
+
+        display = display[
+            [
+                "음식 이름",
+                "weight",
+                "calories",
+                "protein",
+                "fats",
+                "carbohydrates"
+            ]
+        ].rename(columns={
+            "weight": "섭취량(g)",
+            "calories": "칼로리(kcal)",
+            "protein": "단백질(g)",
+            "fats": "지방(g)",
+            "carbohydrates": "탄수화물(g)"
+        })
+
+        st.dataframe(
+            display,
+            use_container_width=True,
+            hide_index=True
+        )
+
+# =========================================
+# 16. 하단 디자인
 # =========================================
 
 st.divider()
@@ -577,11 +718,13 @@ padding:20px;
 <div style="
 text-align:center;
 color:#d63384;
-font-size:17px;
+font-size:19px;
 font-weight:bold;
 ">
 맛있는 음식과 함께 행복한 하루 보내세요! 💗
 </div>
 """, unsafe_allow_html=True)
 
-st.caption("영양 정보는 nutrition.csv 데이터를 기준으로 합니다.")
+st.caption(
+    "※ 음식 및 영양 정보는 nutrition.csv 데이터를 기준으로 합니다."
+)
